@@ -8,14 +8,36 @@ Authors:
 import sys
 import json
 
+# Constants
+BOARD_DIM_BOUNDS = 3
 
 # Class for game board
 class GameBoard:
     def __init__(self):
-        self.hexes = {}
+        self.colour_pieces = {}
+        self.blocks = {}
 
-    def neighbours(self, coordinate):
-        return self.hexes[coordinate]
+    # Check if coordinate is a block or not
+    def isSteppable(self, current_hex):
+      return current_hex not in self.blocks
+    
+    def isJumpable(self, current_hex, from_hex):
+      (q_current, r_current) = current_hex
+      (q_from, r_from) = from_hex
+
+
+    # Check if coordinate is within the bounds of the game board or not
+    def in_bounds(self, current_hex):
+      (q, r) = current_hex
+      return (abs(q)<=3 and abs(r)<=3 and abs(q+r)<=3)
+
+    def neighbours(self, current_hex):
+      (q, r) = current_hex
+      results = [(q, r-1), (q+1, r-1), (q+1, r), (q, r+1), (q-1, r+1), (q-1, r)]
+      results.filter(self.isSteppable, results)
+      results.filter(self.in_bounds, results)
+      return results
+
 
 # Convert axial coordinates to cube coordinates
 def axial_to_cube(hex):
@@ -76,7 +98,8 @@ def main():
 
     goals = get_goals(colour_in_play, block_pieces)
 
-
+    # Initiate Game Board
+    game_board = GameBoard()
 
 
 
